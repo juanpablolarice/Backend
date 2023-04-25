@@ -1,119 +1,95 @@
-const { deepStrictEqual } = require("assert")
 const fs = require("fs")
 const path = './products.json'
 
 // Creo el archivo si no existe
-// if(!fs.existsSync('./products.json')){
-//     fs.writeFileSync('./products.json', '[]', {encoding:"utf-8"})
-// }
+if(!fs.existsSync('./products.json')){
+    fs.writeFileSync('./products.json', '[]', {encoding:"utf-8"})
+}
 
 class ProductManager {
-    count = 0;
-    constructor(title, description, price, thumbnail, code, stock, path){
-        this.id = ++this.count;
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.thumbnail = thumbnail;
-        this.code = code;
-        this.stock = stock;
-        this.path = path;
+    static id = 0
+    constructor(path){
+        this.path = path
     }
 
-    getProducts = () => {
-        fs.promises.readFile("./products.json", "utf-8")
-        .then((data)=> {
-            try{
-                let arrayProducts = JSON.parse(data);
-                console.log(arrayProducts);
-            }catch{
-                console.log("El contenido del archivo esta corrupto")
-            }
-        }).catch((err)=> {
-            throw "No se pudo abrir el archivo"
-        })
+    getProducts = async () => {
+        try{
+            let products = await fs.promises.readFile(this.path, "utf-8")//, (err) => err && console.error(err));
+            return JSON.parse(products);
+        }catch(err){
+            console.log(err)
+        }
     }
 
-    addProduct =  (title, description, price, thumbnail, code, stock, path) => {
-        fs.promises.readFile("./products.json", "utf-8")
-        .then((data)=> {
-            try{
-                let arrayProducts = JSON.parse(data);
-                let arrayProductsId = arrayProducts.map(prod => prod.id);
-                let maxId = arrayProductsId.reduce(function(prev, current) {
-                    return (prev.id > current.id) ? prev : current
-                })
-                maxId = maxId + 1
-                let product = {
-                    id: maxId,
-                    title: title,
-                    description: description,
-                    price: price,
-                    thumbnail: thumbnail,
-                    code: code,
-                    stock: stock,
-                    path: path
-                }
-                arrayProducts.push(product)
-                fs.promises.writeFile("./products.json", arrayProducts, { encoding: "utf8" })
-                .then((data)=> {
-                    console.log("Se guardo")
-                }).catch((err)=> {
-                    console.log("Error1")
-                })
-                console.log(arrayProducts);
-            }catch{
-                console.log("Error2")
-            }
-        }).catch((err)=> {
-            console.log("Error3")
-        })
+    getProductById = async (id) => {
+        let products = await this.getProducts()
+        let filter = products.find(product => product.id === id )
+
+        if(filter){
+            console.log(filter);
+        }else{
+            console.log("El ID ingresado no existe")
+        }
     }
 
-    getProductById = (id) => {
-        fs.promises.readFile("./products.json", "utf-8")
-        .then((data)=> {
-            try{
-                let arrayProducts = JSON.parse(data);
-                let product = arrayProducts.find(prod => prod.id == id);
-                if(product){
-                    console.log(product);
-                }else{
-                    console.log("El ID ingresado no existe")
-                }
-            }catch{
-                console.log("Error")
+    addProduct = async (title, description, price, thumbnail, code, stock) => {//}, path) => {
+        let products = await this.getProducts()
+        let productsUpdated = []
+        let product = {
+            id: ProductManager.id,
+            title: title,
+            description: description,
+            price: price,
+            thumbnail: thumbnail,
+            code: code,
+            stock: stock
+        }
+        // console.log(products.length)
+        if(products.length >0){
+            let codeExists = products.find(product => product.code === code)
+            if(codeExists){
+                return console.log("Ya existe un producto con ese código")
             }
-        }).catch((err)=> {
-            throw "No se pudo abrir el archivo"
-        })
+            let maxId = Math.max.apply(Math, products.map(function(prod) { return prod.id; }));
+            ProductManager.id = maxId + 1
+            product.id = ProductManager.id
+            productsUpdated = [products, product]
+        }else{
+            ProductManager.id++
+            product.id = ProductManager.id
+            productsUpdated = [product]
+        }
+        products.push(product)
+        let write = await fs.writeFile(this.path, JSON.stringify(products, null, 2), (err) => err && console.error(err))
     }
 
-    deleteProduct = (id) => {
-        fs.promises.readFile("./products.json", "utf-8")
-        .then((data)=> {
-            try{
-                let arrayProducts = JSON.parse(data);
-                let newProducts = arrayProducts.filter(prod => {
-                    return prod.id !== id
-                });
-                return fs.promises.writeFile("./products.json", newProducts, { encoding: "utf8" })
-                // if(product){
-                //     console.log(product);
-                // }else{
-                //     console.log("El ID ingresado no existe")
-                // }
-            }catch{
-                console.log("Error")
-            }
-        }).catch((err)=> {
-            throw "No se pudo abrir el archivo"
-        })
+    deleteProduct = async (id) => {
+        let products = await this.getProducts()
+        let newProducts = products.filter(prod => {
+            return prod.id !== id
+        });
+
+        if(products.length == newProducts.length){
+            console.log("El ID del producto ingresado no existe")
+        }else{
+            let write = await fs.writeFileSync(this.path, JSON.stringify(newProducts, null, 2), {encoding:"utf-8"})
+        }
+    }
+
+    updateProduct = async ({id, ...product}) => {
+        console.log("ID Update: " + product.id)
+        let deleteProduct = await this.deleteProduct(id);
+        let products = await this.getProducts();
+        console.log(products.length)
+        let productsUpdated = []
+        if(products.length>1){
+            productsUpdated = [products, {id, ...product}]
+        }else{
+            productsUpdated = [{id, ...product}]
+        }
+        products.push({id, ...product})
+        await fs.writeFile(this.path, JSON.stringify(products, null, 2), (err) => err && console.error(err))
     }
 }
-//
-//
-let instancia = new ProductManager();
-instancia.getProducts()
-// instancia.deleteProduct(1)
-instancia.addProduct({ title: "title", description: "description", price: 66611188, thumbnail: "thumbnail", code: "code", stock: 12, path: "./products.json" });
+
+module.exports = ProductManager;

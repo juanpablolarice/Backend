@@ -46,7 +46,7 @@ class ProductManager {
             }else{
                 return "El ID ingresado no existe"
             }
-        } catch (e) {
+        } catch (err) {
             return(err)
             console.log(err)
         }

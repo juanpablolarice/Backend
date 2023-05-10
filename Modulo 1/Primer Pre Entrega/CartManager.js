@@ -1,5 +1,6 @@
 const fs = require("fs")
 const path = './carts.json'
+const ProductManager = require('./ProductManager');
 
 // Creo el archivo si no existe
 if(!fs.existsSync('./carts.json')){
@@ -9,7 +10,7 @@ if(!fs.existsSync('./carts.json')){
 class CartManager {
     static id = 0
     constructor(){
-        // this.carts = []
+        this.path = path
     }
 
     getCarts = async () => {
@@ -18,6 +19,20 @@ class CartManager {
             return JSON.parse(carts);
         }catch(err){
             console.log(err)
+        }
+    }
+
+    productValidate = async (productId) => {
+        const newProduct = await new ProductManager('./products.json')
+        const products = await newProduct.getProducts()
+
+        // const exist = products.filr
+        let productExists = await products.find(product => product.id === productId)
+        console.log(productExists)
+        if(productExists){
+            return true
+        }else{
+            return false
         }
     }
     //
@@ -38,73 +53,99 @@ class CartManager {
     //
     getCartById = async (id) => {
         try {
-            let carts = await this.getcarts()
-            let filter = carts.find(cart => cart.id == id )
+            let carts = await this.getCarts()
+            let cart = carts.find(cart => cart.id == id )
 
-            if(filter){
-                return filter
+            if(cart){
+                return cart.products
             }else{
-                return "El ID ingresado no existe"
+                return "El ID ingresado no corresponde a ningún carro"
             }
         } catch (e) {
-            return(err)
-            console.log(err)
+            return(e)
         }
     }
 
     createCart = async () => {
-        let carts = await this.getCarts()
-        let cartsUpdated = []
-        let cart = {
-            id: CartManager.id,
-            carts: []
+        try {
+            let carts = await this.getCarts()
+            let cartsUpdated = []
+            let cart = {
+                id: CartManager.id,
+                products: []
+            }
+
+            if(carts.length >0){
+                let maxId = Math.max.apply(Math, carts.map(function(cart) { return cart.id; }));
+                CartManager.id = maxId + 1
+                cart.id = CartManager.id
+                cartsUpdated = [carts, cart]
+            }else{
+                CartManager.id++
+                cart.id = CartManager.id
+                cartsUpdated = [cart]
+            }
+            carts.push(cart)
+            let write = await fs.writeFile(this.path, JSON.stringify(carts, null, 2), (err) => err && console.error(err))
+            return "El carrito se creó correctamente"
+        } catch (e) {
+            return "No se pudo crear el carrito"
+        }
+    }
+
+    saveProductByCart = async (cartId, productId) => {
+        // Traigo los productos para validar que exista fuera del carro
+        const newProduct = new ProductManager('./products.json')
+        const products = await newProduct.getProducts()
+        // Traigo todos los carros
+        const carts = await this.getCarts()
+        // Traigo el carro a modificar
+        const cart = await this.getCartById(cartId)
+        // Valido que exista el carro
+        const indexCart = carts.findIndex(cart => cart.id == cartId )
+
+
+        if(indexCart == -1){
+            return "El carro ingresado no existe"
         }
 
-        if(carts.length >0){
-            let maxId = Math.max.apply(Math, carts.map(function(cart) { return cart.id; }));
-            CartManager.id = maxId + 1
-            cart.id = CartManager.id
-            cartsUpdated = [carts, cart]
+        // return cart
+        // const exist = products.filr
+
+        // Valido que el producto existe en general
+        let indexProduct = products.findIndex(product => product.id == productId)
+        if(indexProduct == -1){
+            return "El producto no existe"
         }else{
-            CartManager.id++
-            cart.id = CartManager.id
-            cartsUpdated = [cart]
+            // Valido si el producto existe en el carro
+            const indexProductCart = cart.findIndex(product => product.id == productId)
+            console.log(indexCart)
+            if(indexProductCart == -1){
+                const productToCart = {
+                    id: parseInt(productId),
+                    quantity: 1
+                }
+                cart.push(productToCart)
+                // return false
+            }else{
+                const productToCart = {
+                    id: parseInt(productId),
+                    quantity: cart[indexProductCart].quantity + 1
+                }
+                cart[indexProductCart] = { ...cart[indexProductCart], ...productToCart }
+            }
+
+            let cartNew = {
+                id: parseInt(cartId),
+                products: cart
+            }
+
+            carts[indexCart] = { ...carts[indexCart], ...cartNew }
+
+            let write = await fs.writeFile(this.path, JSON.stringify(carts, null, 2), (err) => err && console.error(err))
+            return "El producto se agregó correctamente"
         }
-        carts.push(cart)
-        let write = await fs.writeFile(this.path, JSON.stringify(carts, null, 2), (err) => err && console.error(err))
-        return carts
     }
-    //
-    // addCarts = async (title, description, code, price, status, stock, thumbnails) => {//}, path) => {
-    //     try {
-    //         let carts = await this.getcarts()
-    //         let cartsUpdated = []
-    //         let cart = {
-    //             id: CartManager.id,
-    //             products: []
-    //         }
-    //
-    //         if(carts.length >0){
-    //             let codeExists = carts.find(cart => cart.code === code)
-    //             if(codeExists){
-    //                 return console.log("Ya existe un carro con ese código")
-    //             }
-    //             let maxId = Math.max.apply(Math, carts.map(function(prod) { return prod.id; }));
-    //             CartManager.id = maxId + 1
-    //             cart.id = CartManager.id
-    //             cartsUpdated = [carts, cart]
-    //         }else{
-    //             CartManager.id++
-    //             cart.id = CartManager.id
-    //             cartsUpdated = [cart]
-    //         }
-    //         carts.push(cart)
-    //         let write = await fs.writeFile(this.path, JSON.stringify(carts, null, 2), (err) => err && console.error(err))
-    //     } catch (e) {
-    //         return(err)
-    //         console.log(err)
-    //     }
-    // }
     //
     // deleteCarts = async (id) => {
     //     try {

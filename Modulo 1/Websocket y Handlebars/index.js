@@ -6,7 +6,6 @@ const ProductManager = require('./ProductManager');
 const PORT = 8080
 const http = require('http')
 const server = http.createServer(app)
-const Swal = require('sweetalert2')
 
 const routesProducts = require('./routes/products')
 const routesCarts = require('./routes/carts')

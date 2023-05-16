@@ -1,0 +1,60 @@
+<div class="container my-5">
+    <div class="row mb-3">
+        <div class="col-12">
+            <h2>Productos Real Time</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="accordion mb-3" id="accordionAddProduct">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                        Crear producto
+                    </button>
+                </h2>
+                <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#accordionExample">
+                    <div class="accordion-body">
+                        <form onsubmit="return addproduct()">
+                            <div class="row mb-3">
+                                <div class="mb-3 col-12">
+                                    <label for="title" class="form-label">Título</label>
+                                    <input type="text" class="form-control" id="title" placeholder="">
+                                </div>
+                                <div class="mb-3 col-12">
+                                    <label for="description" class="form-label">Descripción</label>
+                                    <textarea class="form-control" id="description" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <label for="code" class="form-label">Código</label>
+                                    <input type="text" class="form-control" id="code" placeholder="">
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <label for="price" class="form-label">Precio</label>
+                                    <input type="number" class="form-control" id="price" placeholder="">
+                                </div>
+                                <div class="mb-3 col-4">
+                                    <label for="stock" class="form-label">Stock</label>
+                                    <input type="number" class="form-control" id="stock" placeholder="">
+                                </div>
+                                <div class="mb-3 col-12">
+                                    <label for="category" class="form-label">Categorias</label>
+                                    <input type="text" class="form-control" id="category" placeholder="">
+                                </div>
+                                <div class="mb-3 col-12">
+                                    <label for="thumbnails" class="form-label">Imagenes</label>
+                                    <input type="text" class="form-control" id="thumbnails" placeholder="imagen1.jpg;imagen2.jpg;imagen2.jpg">
+                                </div>
+                                <div class="col-md-4 offset-md-4 text-center">
+                                    <button class="btn btn-primary" type="submit" name="button">Crear producto</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="productsList" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4"></div>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/index.js"></script>

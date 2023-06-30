@@ -1,21 +1,27 @@
 const express = require('express')
 const { Router } = express
 const router = new Router()
-const mongoose = require('mongoose');
 
-const path = require("path")
-const root = path.dirname(__dirname)
+function auth(req, res, next){
+    console.log(req.session.role)
+    if(req.session.role == 'Admin'){
+        next()
+    }
+    return res.status(401).send('Error en la autenticación')
+}
 
-const Cart = require('./../dao/models/cart')
-const Product = require('./../dao/models/product')
-const ProductService = require('./../services/products')
-const ServiceProduct = new ProductService()
-
+// const { register, loginValidate, logout } = require ('./../controllers/userController')
 const { getCartById } = require ('./../controllers/cartController')
 const { showAllProducts } = require ('./../controllers/productController')
 
+router.get('/register', async (req, res) => {
+    res.render('register')
+})
 router.get('/login', async (req, res) => {
     res.render('login')
+})
+router.get('/profile', auth, async (req, res) => {
+    res.render('profile')
 })
 
 // PRODUCTS

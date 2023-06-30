@@ -17,6 +17,8 @@ const dbManager = new MongoManager('mongodb+srv://JuanLarice:Coder2023@cluster0.
 const Cart = require('./dao/models/cart')
 const Product = require('./dao/models/product')
 
+const routesAuth = require('./routes/auth')
+const routesSessions = require('./routes/sessions')
 const routesProducts = require('./routes/products')
 const routesCarts = require('./routes/carts')
 const routesHandlebars = require('./routes/handlebars')
@@ -30,7 +32,7 @@ app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 app.use(session({
-    stroe: MongoStore.create({
+    store: MongoStore.create({
         mongoUrl:'mongodb+srv://JuanLarice:Coder2023@cluster0.z95xyv3.mongodb.net/'
     }),
     secret:'secretCoder',
@@ -39,9 +41,11 @@ app.use(session({
 }))
 
 app.use(express.static(__dirname+'/public'))
+app.use('/', routesAuth)
 app.use('/', routesProducts)
 app.use('/', routesHandlebars)
 app.use('/api/carts', routesCarts)
+app.use('/api/sessions', routesSessions)
 
 
 io.on('connection', async (socket)=>{

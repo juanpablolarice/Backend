@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
-const paginate = require('mongoose-paginate-v2')
-const productsCollection = 'products'
+// const paginate = require('mongoose-paginate-v2')
+const usersCollection = 'users'
 
-const ProductSchema = new mongoose.Schema({
+const UserSchema = new mongoose.Schema({
     // _id:{
     //     type:String,
     // },
@@ -10,11 +10,21 @@ const ProductSchema = new mongoose.Schema({
         type:String,
         unique:true,
         required:true
+    },
+    password:{
+        type:String,
+        required:true
+    },
+    phone:{
+        type:String,
+        required:true
+    },
+    role:{
+        type:String,
+        required:true,
+        default:'User',
+        enum:['Admin', 'User']
     }
-    // description:{
-    //     type:String,
-    //     required:true
-    // },
     // code:{
     //     type:String,
     //     unique:true,
@@ -42,8 +52,8 @@ const ProductSchema = new mongoose.Schema({
     // }]
 })
 
-ProductSchema.plugin(paginate)
-const Product = mongoose.model('product', ProductSchema)
-// const Product = mongoose.model(productsCollection, ProductSchema)
+// ProductSchema.plugin(paginate)
+// const Product = mongoose.model('product', ProductSchema)
+const User = mongoose.model(usersCollection, UserSchema)
 
-module.exports = Product
+module.exports = User

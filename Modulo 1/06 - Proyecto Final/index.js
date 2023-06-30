@@ -6,6 +6,8 @@ const handlebars = require('express-handlebars')
 const PORT = 8080
 const http = require('http')
 const server = http.createServer(app)
+const {Server} = require('socket.io')
+const io = new Server(server)
 const MongoManager = require('./dao/db')
 const dbManager = new MongoManager('mongodb+srv://JuanLarice:Coder2023@cluster0.z95xyv3.mongodb.net/');
 const Cart = require('./dao/models/cart')
@@ -15,10 +17,6 @@ const routesProducts = require('./routes/products')
 const routesCarts = require('./routes/carts')
 const routesHandlebars = require('./routes/handlebars')
 
-server.listen(PORT, () => {
-    console.log('Servidor corriendo en el puerto 8080')
-    dbManager.connect()
-})
 
 app.engine('handlebars', handlebars.engine() )
 app.set('views', __dirname+'/views')
@@ -31,3 +29,25 @@ app.use(express.static(__dirname+'/public'))
 app.use('/', routesProducts)
 app.use('/', routesHandlebars)
 app.use('/api/carts', routesCarts)
+
+
+io.on('connection', async (socket)=>{
+    console.log("Cliente conectado")
+
+    // socket.emit('products', products)
+
+    socket.on('addProduct', (data)=>{
+    //   // let response = prod.addProduct(data.title, data.description, data.code, data.price, data.status, data.stock, data.thumbnails)
+      console.log("Add product in index.js")
+    })
+    //
+    // socket.on('deleteProduct', async (data) => {
+    //     // let response = await prod.deleteProduct(data)
+    //     console.log(response)
+    // })
+})
+
+server.listen(PORT, () => {
+    console.log('Servidor corriendo en el puerto 8080')
+    dbManager.connect()
+})

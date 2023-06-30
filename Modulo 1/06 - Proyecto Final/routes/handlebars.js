@@ -1,7 +1,7 @@
 const express = require('express')
 const { Router } = express
 const router = new Router()
-const  ObjectId = require('mongodb').ObjectId;
+const mongoose = require('mongoose');
 
 const path = require("path")
 const root = path.dirname(__dirname)
@@ -11,36 +11,11 @@ const Product = require('./../dao/models/product')
 const ProductService = require('./../services/products')
 const ServiceProduct = new ProductService()
 
+const { getCartById } = require ('./../controllers/cartController')
+const { showAllProducts } = require ('./../controllers/productController')
+
 // PRODUCTS
-router.get('/products', async (req, res) => {
-    try{
-        const { page, limit, sort, query } = req.query;
-        const dataProducts = await Service.getAll(page, limit, sort, query);
-
-        let  products = dataProducts.docs.map((item) => {
-            return {
-                _id: item._id,
-                title: item.title,
-                description: item.description,
-                code: item.code,
-                price: item.price,
-                status: item.status,
-                stock: item.stock,
-                category: item.category,
-                thumbnails: item.thumbnails
-            };
-        });
-        const { docs, ...rest } = dataProducts;
-
-        return res.status(200).render('products', { products, pagination: rest});//, links });
-    }catch(err){
-        return res.status(500).json({
-            status: 'error',
-            msg: 'Ocurrió un error inesperado.',
-            data: {},
-        });
-    }
-});
+router.get('/products', showAllProducts)
 
 router.get('/products/:id', async (req, res) => {
     let { id } = req.params
@@ -68,27 +43,40 @@ router.get('/products/:id', async (req, res) => {
 });
 
 // CARTS
-router.get('/cart/:id', async (req, res) => {
-    let { id } = req.params
-    const cart = await Cart.findOne({ _id: id }).populate('products.product')
-
-    let products = cart.products.map((item) => {
-        return {
-            _id: item.product._id,
-            title: item.product.title,
-            description: item.product.description,
-            code: item.product.code,
-            price: item.product.price,
-            status: item.product.status,
-            stock: item.product.stock,
-            category: item.product.category,
-            thumbnails: item.product.thumbnails,
-            quantity: item.quantity
-        };
-    });
-
-    res.render('cart',  { products })
-})
+// router.get('/cart/:id', getCartById) //async (req, res) => {
+//     const cart = getCartById()
+//
+//
+//
+//     let { id } = req.params
+//     // const aux = id
+//     // const idString = id;
+//     // const idObject = new mongoose.Types.ObjectId(id);
+//     // if (mongoose.Types.ObjectId.isValid(idObject)) {
+//     //     console.log('El ID es válido.');
+//     // } else {
+//     //     console.log('El ID no es válido.');
+//     // }
+//     const cart = await Cart.findById(id).populate('products.product')
+//     console.log(cart)
+//     //
+//     // let products = cart.products.map((item) => {
+//     //     return {
+//     //         _id: item.product._id,
+//     //         title: item.product.title,
+//     //         description: item.product.description,
+//     //         code: item.product.code,
+//     //         price: item.product.price,
+//     //         status: item.product.status,
+//     //         stock: item.product.stock,
+//     //         category: item.product.category,
+//     //         thumbnails: item.product.thumbnails,
+//     //         quantity: item.quantity
+//     //     };
+//     // });
+//
+//     res.render('cart',  JSON.stringify(cart, null, '\t'))
+// })
 
 
 

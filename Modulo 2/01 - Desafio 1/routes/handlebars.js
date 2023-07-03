@@ -3,11 +3,13 @@ const { Router } = express
 const router = new Router()
 
 function auth(req, res, next){
-    console.log(req.session.role)
-    if(req.session.role == 'Admin'){
+    if(req.session.role == 'User'){
+        console.log(req.session.role)
         next()
+    }else{
+        console.log('No coincide la sesion')
+        return res.redirect('login')//, {error: 'No tienes permiso suficiente'})//.send('Error en la autenticación')
     }
-    return res.status(401).send('Error en la autenticación')
 }
 
 // const { register, loginValidate, logout } = require ('./../controllers/userController')
@@ -25,9 +27,9 @@ router.get('/profile', auth, async (req, res) => {
 })
 
 // PRODUCTS
-router.get('/products', showAllProducts)
+router.get('/products', auth, showAllProducts)
 
-router.get('/products/:id', async (req, res) => {
+router.get('/products/:id', auth, async (req, res) => {
     let { id } = req.params
     // let product = await Service.getById(id)
     let product = await Product.findOne({ _id: id })

@@ -23,8 +23,19 @@ const routesProducts = require('./routes/products')
 const routesCarts = require('./routes/carts')
 const routesHandlebars = require('./routes/handlebars')
 
+// app.engine('handlebars', handlebars.engine() )
+app.engine('handlebars', handlebars.engine({
+    helpers: {
+        sayHello: function () { return "Hello"; },
+        getStringifiedJson: function (value) {
+            return JSON.stringify(value);
+        }
+    },
+partialsDir: ['views/partials/'],
+defaultLayout: 'main'
+}));
+// handlebars.registerPartials(__dirname + '/views/partials');
 
-app.engine('handlebars', handlebars.engine() )
 app.set('views', __dirname+'/views')
 app.set('view engine', 'handlebars' )
 

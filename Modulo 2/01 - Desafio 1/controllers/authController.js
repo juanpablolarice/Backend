@@ -15,15 +15,23 @@ const register = async (req, res) => {
 
 const loginValidate = async (req, res) => {
     try {
+        const { email, password } = req.body
         let userLogin = req.body
         let userFound = await User.findOne({ email: userLogin.email, password: userLogin.password })//.exec()
-
         if(userFound){
-            req.session.user = userLogin.email
-            req.session.password = userLogin.password
+            req.session.name = userFound.name
+            req.session.user = userFound.email
             req.session.role = userFound.role
+            // req.session.save()
+            res.redirect('/products')
+        }else{
+            res.render('login', {
+                error: 'Las credenciales no coinciden'
+                // email: email,
+                // password: password
+            })
+        //     res.send('user not Found')
         }
-        res.redirect('/productos')
     } catch (e) {
         return res.status(500).json({
             status: 'Error',
@@ -38,6 +46,16 @@ const logout = async (req, res) => {
         res.redirect('/login')
         // res.send('Logout ok!')
     })
+    // console.log(req.session)
+
+    // req.session.destroy()
+    // if(req.session == undefined)
+    //     res.redirect('/login')
+    // res.send('Failed logout')
+
+    // console.log('Despues del destroy')
+    // console.log(req.session)
+
 }
 
 module.exports = { register, loginValidate, logout }

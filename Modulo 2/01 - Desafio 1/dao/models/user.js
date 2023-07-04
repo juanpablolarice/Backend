@@ -6,6 +6,10 @@ const UserSchema = new mongoose.Schema({
     // _id:{
     //     type:String,
     // },
+    name:{
+        type:String,        
+        required:true
+    },
     email:{
         type:String,
         unique:true,

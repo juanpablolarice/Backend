@@ -46,12 +46,16 @@ app.use(session({
     store: MongoStore.create({
         mongoUrl:'mongodb+srv://JuanLarice:Coder2023@cluster0.z95xyv3.mongodb.net/'
     }),
+    // cookie: {
+    //     sameSite: 'strict'
+    // },
     secret:'secretCoder',
     resave:true,
     saveUninitialized:true
 }))
 
 app.use(express.static(__dirname+'/public'))
+
 app.use('/', routesAuth)
 app.use('/', routesProducts)
 app.use('/', routesHandlebars)

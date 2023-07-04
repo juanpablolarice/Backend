@@ -122,7 +122,7 @@ const showAllProducts = async (req, res) => {
         });
         const { docs, ...rest } = dataProducts;
 
-        return res.status(200).render('products', { products, pagination: rest});//, links });
+        return res.status(200).render('products', { products, pagination: rest, name: req.session.name});//, links });
     } catch (err) {
         res.status(500).send({ error: 'Se produjo un error inesperado' })
     }

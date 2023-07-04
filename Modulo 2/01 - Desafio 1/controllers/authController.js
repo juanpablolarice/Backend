@@ -19,10 +19,12 @@ const loginValidate = async (req, res) => {
         let userLogin = req.body
         let userFound = await User.findOne({ email: userLogin.email, password: userLogin.password })//.exec()
         if(userFound){
+            console.log(userFound.name)
             req.session.name = userFound.name
+            console.log(req.session.name)
             req.session.user = userFound.email
             req.session.role = userFound.role
-            // req.session.save()
+
             res.redirect('/products')
         }else{
             res.render('login', {

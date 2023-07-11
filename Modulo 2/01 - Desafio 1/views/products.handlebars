@@ -1,5 +1,13 @@
 {{> navbar}}
 <div class="container my-5">
+    {{#if user.email }}
+    <div class="row">
+        <div class="col-12">
+            <h1>Bienvenido/a {{ user.email }}</h1>
+            <h4>Role: {{ user.role }}</h4>
+        </div>
+    </div>
+    {{/if}}
     <div class="row mb-3">
         <div class="col-12">
             <h2 class="text-light">Productos</h2>

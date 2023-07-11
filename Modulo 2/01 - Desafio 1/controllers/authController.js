@@ -17,20 +17,16 @@ const loginValidate = async (req, res) => {
     try {
         const { email, password } = req.body
         let userLogin = req.body
-        let userFound = await User.findOne({ email: userLogin.email, password: userLogin.password })//.exec()
+        let userFound = await User.findOne({ email: userLogin.email, password: userLogin.password })
         if(userFound){
-            console.log(userFound.name)
-            req.session.name = userFound.name
-            console.log(req.session.name)
             req.session.user = userFound.email
             req.session.role = userFound.role
 
             res.redirect('/products')
         }else{
             res.render('login', {
-                error: 'Las credenciales no coinciden'
-                // email: email,
-                // password: password
+                status: 'Error',
+                error: 'No se pudo iniciar sesión'
             })
         //     res.send('user not Found')
         }

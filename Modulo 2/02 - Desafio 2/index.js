@@ -7,6 +7,8 @@ const session = require('express-session')
 const FileStore = require('session-file-store')(session)
 const MongoStore = require('connect-mongo')
 const passport = require('passport')
+const initializePassport = require('./config/passport')
+
 
 const PORT = 8080
 const http = require('http')
@@ -14,7 +16,7 @@ const server = http.createServer(app)
 const {Server} = require('socket.io')
 const io = new Server(server)
 const MongoManager = require('./dao/db')
-const CONFIG = require('./config/constants.js')
+const CONFIG = require('./config/constants')
 const dbManager = new MongoManager('mongodb+srv://JuanLarice:Coder2023@cluster0.z95xyv3.mongodb.net/');
 const Cart = require('./dao/models/cart')
 const Product = require('./dao/models/product')
@@ -53,6 +55,7 @@ app.use(session({
     saveUninitialized:true
 }))
 
+initializePassport()
 app.use(passport.initialize())
 app.use(passport.session())
 

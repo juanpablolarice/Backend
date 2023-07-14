@@ -17,6 +17,7 @@ const register = async (req, res) => {
     }
 }
 
+
 const loginValidate = async (req, res) => {
     try {
         let userLogin = req.body

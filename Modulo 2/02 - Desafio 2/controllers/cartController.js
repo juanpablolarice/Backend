@@ -42,6 +42,15 @@ const createCart = async (req, res) => {
     }
 }
 
+const createEmptyCart = async () => {
+    try {
+        let result  = await Cart.create()
+        return result._id;
+    } catch (e) {
+        return 'Error al crear el carro vacio';
+    }
+}
+
 const addProductToCart = async (req, res) => {
     try {
         const { cid } = req.params
@@ -116,7 +125,7 @@ const deleteCart = async (req, res) => {
 const deleteProductFromCart = async (req, res) => {
     try {
         const { cid, pid } = req.params
-                
+
         let cart = await Cart.findOneAndUpdate(
             { _id: cid },
             { "$pull": { "products": { "product": pid } } },
@@ -135,4 +144,4 @@ const deleteProductFromCart = async (req, res) => {
     }
 }
 
-module.exports = { getAll, getCartById, createCart, addProductToCart, updateProductQuantity, deleteCart, deleteProductFromCart }
+module.exports = { getAll, getCartById, createCart, createEmptyCart, addProductToCart, updateProductQuantity, deleteCart, deleteProductFromCart }

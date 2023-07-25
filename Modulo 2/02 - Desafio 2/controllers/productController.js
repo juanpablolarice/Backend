@@ -122,8 +122,8 @@ const showAllProducts = async (req, res) => {
         });
         const { docs, ...rest } = dataProducts;
         const user = {
-            email: req.session.user,
-            role: req.session.role
+            email: req.session.user.email,
+            role: req.session.user.role
         }
         return res.status(200).render('products', { products, pagination: rest, user});//, links });
     } catch (err) {

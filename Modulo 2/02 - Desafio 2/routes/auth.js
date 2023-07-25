@@ -11,7 +11,15 @@ const { register, loginValidate, logout } = require ('./../controllers/authContr
 router.post('/register',
     passport.authenticate('register',
     {failureRedirect:'/user/failedRegister'}), (req, res) =>{
-        res.send('usuario registrado')
+        console.log('usuario registrado')
+        req.session.user = req.user
+        res.status(200).redirect('/products')
+})
+
+router.post('/login', passport.authenticate('login', {failureRedirect: '/'}), (req, res) => {
+    req.session.user = req.user
+
+    res.status(200).redirect('/products')
 })
 
 router.get('/failedRegister', (req, res) => {
@@ -25,11 +33,12 @@ router.get('/auth/github',
 
 router.get('/auth/github/callback',
     passport.authenticate('auth-github',
-        { failureRedirect: '/login'}),  (req, res) => {
-            res.send(req.user);
+        { failureRedirect: '/'}),  (req, res) => {
+            req.session.user = req.user
+            res.status(200).redirect('/products')
     });
 
-router.post('/login', loginValidate)
+// router.post('/login', loginValidate)
 router.get('/logout', logout)
 
 module.exports = router

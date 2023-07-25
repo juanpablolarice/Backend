@@ -3,20 +3,20 @@ const { Router } = express
 const router = new Router()
 
 function auth(req, res, next){
-    if(req.session.role == 'User' || req.session.role == 'admin'){
-        console.log(req.session.role)
-        next()
+    if(req.session.user){
+        if(req.session.user.role == 'User' || req.session.user.role == 'admin'){
+            console.log(req.session.user.role)
+            next()
+        }
     }else{
-        console.log('No coincide la sesion')
-        return res.redirect('login')//, {error: 'No tienes permiso suficiente'})//.send('Error en la autenticación')
+        return res.redirect('login')
     }
 }
 
-// const { register, loginValidate, logout } = require ('./../controllers/userController')
 const { getCartById } = require ('./../controllers/cartController')
 const { showAllProducts } = require ('./../controllers/productController')
 
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
     res.redirect('login')
 })
 

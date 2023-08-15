@@ -3,16 +3,15 @@ const { Router } = express
 const router = new Router()
 
 function auth(req, res, next){
-    if(req.session.user){
-        console.log(req.session.user)
+    console.log("handlebars.js " + req.session.user.role)
+    if(req.session.user.role){
         if(req.session.user.role == 'User' || req.session.user.role == 'Admin'){
-            console.log(req.session.user.role)
+            console.log("XXXX" + req.session.cart)
             next()
         }else{
             console.log('No coincide la sesion')
-            return res.redirect('login')//, {error: 'No tienes permiso suficiente'})//.send('Error en la autenticación')
+            return res.redirect('login')
         }
-    // }else{
     }else{
         return res.redirect('login')
     }
@@ -29,7 +28,7 @@ router.get('/', async (req, res) => {
 router.get('/register', async (req, res) => {
     res.render('register')
 })
-router.get('/login', async (req, res) => {
+router.get('/login', async (req, res) => {    
     res.render('login')
 })
 router.get('/profile', auth, async (req, res) => {

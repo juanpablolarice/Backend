@@ -18,39 +18,40 @@ const register = async (req, res) => {
 }
 
 
-const loginValidate = async (req, res) => {
-    try {
-        let userLogin = req.body
+// const loginValidate = async (req, res) => {
+//     try {
+//         let userLogin = req.body
+//         let userFound = await User.findOne({ email: userLogin.email })
 
-        if(userLogin.email === 'adminCoder@coder.com' && userLogin.password === 'adminCod3r123'){
-            req.session.user = 'adminCoder@coder.com'
-            req.session.role = 'admin'
+//         // console.log(userFound)
+//         if(userFound){
+//             if(isValidPassword(userFound, userLogin.password)){
+//                 const user = {
+//                     email: userFound.email,
+//                     name: userFound.name,
+//                     role: userFound.role
+//                 }
+//                 console.log("loginValidate" + user)
+//                 req.session.user = user
+//                 // req.session.user = userFound.email
+//                 // req.session.role = userFound.role
 
-            res.status(200).redirect('/products')
-        }
-
-        let userFound = await User.findOne({ email: userLogin.email })
-        console.log(userFound)
-        if(userFound){
-            if(isValidPassword(userFound, userLogin.password)){
-                req.session.user = userFound.email
-                req.session.role = userFound.role
-
-                res.status(200).redirect('/products')
-            }
-        }else{
-            res.render('login', {
-                status: 'Error',
-                error: 'No se pudo iniciar sesión'
-            })
-        }
-    } catch (e) {
-        return res.status(500).json({
-            status: 'Error',
-            msg: 'No se pudo iniciar sesión',
-        })
-    }
-}
+//                 res.status(200).redirect('/products')
+//             }
+//         }else{
+//             console.log("no paso loginvalidate")
+//             res.render('login', {
+//                 status: 'Error',
+//                 error: 'No se pudo iniciar sesión'
+//             })
+//         }
+//     } catch (e) {
+//         return res.status(500).json({
+//             status: 'Error',
+//             msg: 'No se pudo iniciar sesión',
+//         })
+//     }
+// }
 
 const logout = async (req, res) => {
     req.session.destroy(err => {
@@ -70,4 +71,4 @@ const logout = async (req, res) => {
 
 }
 
-module.exports = { register, loginValidate, logout }
+module.exports = { register, logout }

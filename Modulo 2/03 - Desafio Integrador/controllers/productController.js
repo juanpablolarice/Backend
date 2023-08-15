@@ -121,13 +121,12 @@ const showAllProducts = async (req, res) => {
             };
         });
         const { docs, ...rest } = dataProducts;
-        const user = {
-            name: req.session.user.name,
-            email: req.session.user.email,
-            role: req.session.user.role,
-            cart: req.session.user.cart
-        }
-        return res.status(200).render('products', { products, pagination: rest, user});//, links });
+        
+        return res.status(200).render('products', { 
+            products, 
+            pagination: rest,
+            user: req.session.user
+        });
     } catch (err) {
         res.status(500).send({ error: 'Se produjo un error inesperado' })
     }

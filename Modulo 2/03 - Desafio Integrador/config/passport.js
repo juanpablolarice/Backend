@@ -12,8 +12,8 @@ const initializePassport = () => {
         async (req, username, password, done) => {
             try {
                 let userData = req.body
-                // BUSCAR SI EXISTE EL USUARIO
-                let user = await userModel.findOne({email: username})
+                // BUSCAR SI EXISTE EL USUARIO                
+                let user = await userModel.findOne({email: username}, '_id name email phone age cart role')
                 if(user) {
                     console.log('Ya existe')
                     done(null, false)
@@ -24,8 +24,6 @@ const initializePassport = () => {
                 console.log(cart)
                 let userNew = {
                     name: userData.name,
-                    // first_name: userData.first_name,
-                    // last_name: userData.last_name,
                     age: userData.age,
                     phone: userData.phone,
                     cart: cart._id,
@@ -35,7 +33,8 @@ const initializePassport = () => {
                 }
 
                 let result = await userModel.create(userNew)
-                done(null, result)
+                const userCreated = await userModel.findOne({email: userData.email}, '_id name email phone age cart role')
+                done(null, userCreated)
             } catch (e) {
                 return done("Error al crear el usuario: " + e)
             }
@@ -54,19 +53,16 @@ const initializePassport = () => {
             usernameField: 'email',
             passwordField: 'password'
         },
-
         async (req, username, password, done) =>{
             try {
-                const user = await userModel.findOne({ email: username });
-                console.log('passport: ' + user)
-                if(user){
-                    const validPassword = await isValidPassword( user, password );
-                    if(validPassword){
-                        console.log("entro " + user)
+                const userData = await userModel.findOne({ email: username });
+                if(userData){
+                    const validPassword = await isValidPassword( userData, password );
+                    if(validPassword){                        
+                        const user = await userModel.findOne({email: username}, '_id name email phone age cart role')
                         return done(null, user);
-                    }else{
-                        console.log("no entro")
-                        return done(null, false, { message: 'El usuario y la clave no coinciden...'});
+                    }else{                        
+                        return done(null, false, {message: 'El usuario y la clave no coinciden...'});
                     }
                 }else{
                     return done(null, false, { message: 'El usuario no existe...'});
@@ -84,7 +80,8 @@ const initializePassport = () => {
         },
         async function (accessToken, refreshToken, profile, done){
             try {
-                let user = await userModel.findOne({ email: `${profile._json.login}@github.com.ar`})
+                let user = await userModel.findOne({ email: `${profile._json.login}@github.com.ar`}, '_id name email phone age cart role')
+                
                 if(user == null){
                     const cart = await cartModel.create({})
 

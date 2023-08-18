@@ -29,7 +29,7 @@ const showAllProductsService = async (category, status, limit, sort, page) => {
                 page: page || 1
             })
         }
-        console.log("Product Service: " + dataProducts)
+        
         let  products = dataProducts.docs.map((item) => {
             return {
                 _id: item._id,
@@ -51,4 +51,10 @@ const showAllProductsService = async (category, status, limit, sort, page) => {
     }
 }
 
-module.exports = { showAllProductsService }
+const getProductById = async (id) => {
+    const product = await Product.findOne({ _id: id }, '_id title description code price status stock category thumbnails')
+    console.log("Products.services: " + product)
+    return product
+}
+
+module.exports = { showAllProductsService, getProductById }

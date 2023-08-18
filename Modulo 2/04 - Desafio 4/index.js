@@ -24,7 +24,7 @@ const routesAuth = require('./routes/auth')
 const routesSessions = require('./routes/sessions')
 const routesProducts = require('./routes/products')
 const routesCarts = require('./routes/carts')
-const routesHandlebars = require('./routes/handlebars')
+const routesUsers = require('./routes/users')
 
 
 app.engine('handlebars', handlebars.engine({
@@ -61,7 +61,7 @@ app.use(express.static(__dirname+'/public'))
 
 app.use('/', routesAuth)
 app.use('/', routesProducts)
-app.use('/', routesHandlebars)
+app.use('/', routesUsers)
 app.use('/api/carts', routesCarts)
 app.use('/api/sessions', routesSessions)
 

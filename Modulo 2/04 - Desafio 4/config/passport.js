@@ -15,7 +15,6 @@ const initializePassport = () => {
                 // BUSCAR SI EXISTE EL USUARIO                
                 let user = await userModel.findOne({email: username}, '_id name email phone age cart role')
                 if(user) {
-                    console.log('Ya existe')
                     done(null, false)
                 }
 
@@ -96,7 +95,6 @@ const initializePassport = () => {
                     }
 
                     let result = await userModel.create(newUser)
-                    console.log("no encontro", result)
                     done(null, result)
                 }else{
                     console.log("encontro user", user)

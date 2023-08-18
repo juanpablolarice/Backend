@@ -15,19 +15,10 @@ function auth(req, res, next){
 }
 
 // const { register, loginValidate, logout } = require ('./../controllers/userController')
-const { getCartById } = require ('./../controllers/cartController')
-const { showAllProducts } = require ('./../controllers/productController')
+const { getCartById } = require ('../controllers/cartController')
+const { showAllProducts } = require ('../controllers/productController')
 
-router.get('/', async (req, res) => {
-    res.redirect('login')
-})
 
-// router.get('/register', async (req, res) => {
-//     res.render('register')
-// })
-router.get('/login', async (req, res) => {    
-    res.render('login')
-})
 router.get('/profile', auth, async (req, res) => {
     res.render('profile')
 })

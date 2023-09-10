@@ -3,12 +3,11 @@ const mongoose = require('mongoose');
 const TicketSchema = new mongoose.Schema({
     code: {
         type: String,
-        unique: true,
-        required: true,
+        default: Date.now
     },
     purchaser_datetime: {
         type: Date,
-        required: true,
+        default: Date.now
     },
     amount: {
         type: Number,
@@ -16,9 +15,9 @@ const TicketSchema = new mongoose.Schema({
     },
     purchaser: {
         type: String,
-        required: true,
+        max: 100,
     },
-});
+}, { versionKey: false });
 
 const Ticket = mongoose.model('ticket', TicketSchema);
 

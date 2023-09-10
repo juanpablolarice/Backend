@@ -73,7 +73,7 @@
     {{#if products}}
     <div class="row mt-4 mb-4">
         <div class="col-sm-3 ps-0 text-start">
-            <a href="" class="btn btn-success">Finalizar compra</a>
+            <a href="/cart/{{user.cart}}/purchase" class="btn btn-success">Finalizar compra</a>
         </div>
         <div class="col-sm-9 text-end text-white">
             <h4><strong>Total: <i class="fs-3">$<span id="total">{{total}}</span></i></strong></h4>

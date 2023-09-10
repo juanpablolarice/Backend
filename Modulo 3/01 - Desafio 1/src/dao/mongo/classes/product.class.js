@@ -1,13 +1,10 @@
 const productModel = require('../models/product.model')
+const cartModel = require('../models/cart.model')
+
 
 class Product {    
     constructor(){
         this.data = []
-    }
-
-    prueba = async (p) => {
-        console.log("entro a prueba")
-        return { msg: "prueba", a: p }
     }
 
     allProducts = async (category, status, limit, sort, page) => {
@@ -61,56 +58,84 @@ class Product {
         }
     }
     
+    
     getProductById = async (id) => {
-        console.log("Product.class")
-        const product = await productModel.findOne({ _id: id }, '_id title description code price status stock category thumbnails')
-        if(product){
-            console.log('Entro')                
-            return product
-        }else{
-            console.log('No entro')            
+        try {
+            const product = await productModel.findOne({ _id: id });
+            return product;
+        } catch (error) {
+            throw new Error(error.message);
         }
-        // console.log("product.class: " + product.name)
-        return "" //product
+        // console.log("Product.class")
+        // const product = await productModel.findOne({ _id: id }, '_id title description code price status stock category thumbnails')
+        // if(product){
+        //     console.log('Entro')                
+        //     return product
+        // }else{
+        //     console.log('No entro')            
+        // }
+        // // console.log("product.class: " + product.name)
+        // return "" //product
     }
-
-    createProduct = async () => {
-
+    
+    updateProduct = async (productId, product) => {
+        try {
+            await productModel.updateOne({_id: productId},  {
+                title: product.title,
+                description: product.description,
+                code: product.code,
+                price: product.price,
+                status: product.status,
+                stock: product.stock,
+                category: product.category
+            });
+            // Falta actualizar el array de imagenes
+            return "El producto se actualizó correctamente"
+        } catch (e) {            
+            return "Ocurrió un error inesperado"
+        }
     }
 
     storeProduct = async (newProduct) => {
         try {
             const code = await productModel.findOne({ code: newProduct.code }, '_id title description code price status stock category thumbnails')
             const title = await productModel.findOne({ title: newProduct.title }, '_id title description code price status stock category thumbnails')
-            
-            // let productsUpdated = []            
-            // const thumbs = thumbnails.split(",")
-            
-            // let newProduct = {
-            //     title: title,
-            //     description: description,
-            //     code: code,
-            //     price: price,
-            //     status: status,
-            //     stock: stock,
-            //     category: category,
-            //     thumbnails: thumbs
-            // }
-           
+                       
             if(code){
-                console.log("Entro")
                 return "Ya existe un producto con ese código"
             }else if(title){
                 return "Ya existe un producto con ese título"
             }else{
-                console.log("No entro")
                 let result = await productModel.create(newProduct)
-                return "Se crea correctamente"
+                return "El producto se creó correctamente"
             }
-        } catch (e) {
-            console.log(e)
+        } catch (e) {            
             return "Ocurrió un error inesperado"
-            return(e)
+        }
+    }
+
+    getArrProductsData = async (arr) => {
+        const productsData = [];
+
+        for (const id of arr) {
+            const product = await productModel.findOne({ _id: id })
+            productsData.push(product);
+        }
+      
+        return productsData;
+    }
+
+    deleteProduct = async (pid) => {        
+        try {
+            console.log("Product Class")
+            const resul = await productModel.deleteOne({_id: pid})
+            return resul       
+        } catch (error) {
+            const response = {
+                status: 'error',
+                msg: 'El producto no se encontro'
+            }
+            return JSON.stringify(response)
         }
     }
 }

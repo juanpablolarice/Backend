@@ -62,8 +62,7 @@ const initializePassport = () => {
                     const validPassword = await isValidPassword( userData, password );
                     if(validPassword){
                         const user = await userModel.findOne({email: username})
-                        const userDto = new userDTO(user)
-                        // const user = await userModel.findOne({email: username}, '_id name email phone age cart role')
+                        const userDto = new userDTO(user)                        
                         return done(null, userDto);
                     }else{                        
                         return done(null, false, {message: 'El usuario y la clave no coinciden...'});

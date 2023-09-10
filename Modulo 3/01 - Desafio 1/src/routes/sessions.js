@@ -4,6 +4,7 @@ const router = new Router()
 
 router.get('/current', async (req, res) => {
     try{
+        // En el req.session.user se asigno el DTO de user
         res.status(200).send(req.session.user)
     }catch (error) {
         res.status(500).json({
@@ -12,8 +13,5 @@ router.get('/current', async (req, res) => {
         })
     }
 })
-
-router.get('/:cid', )
-
 
 module.exports = router

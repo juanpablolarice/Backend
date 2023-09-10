@@ -9,14 +9,62 @@ const showAllProducts = async (req, res) => {
     const [products, rest] = await productClass.allProducts(category, status, limit, sort, page)
     const cartClass = new Cart()    
     const cart = await cartClass.getCartById(req.session.user.cart)
-            
+
+    if(req.session.user.role=="Admin"){
+        isAdmin = true
+    }else{
+        isAdmin = false
+    }
+    
     return res.status(200).render('products', { 
         products, 
         cart: cart.products,
         pagination: rest,
         user: req.session.user,
-        isAdmin:req.session.user.role==="Admin"
+        isAdmin: isAdmin
     });
+}
+
+const editProduct = async (req, res) => {
+    try {
+        const { pid } = req.params
+        const productClass = new Product()
+        const product = await productClass.getProductById(pid)
+        if(product){
+            let thumbs = product.thumbnails.toString()            
+            productHandlebars = {
+                _id: pid, 
+                title: product.title,
+                description: product.description,
+                code: product.code,
+                price: product.price,
+                status: product.status,
+                stock: product.stock,
+                category: product.category,
+                thumbnails: thumbs
+            }
+            
+            return res.status(200).render('editProduct', {
+                isAdmin:req.session.user.role==="Admin", 
+                product: productHandlebars,
+                pid: pid
+            });
+        }else{
+
+        }
+    } catch (error) {
+        
+    }
+}
+
+const updateProduct = async (req, res) => {
+    const { pid } = req.params
+    let product = req.body
+    product.thumbnails = product.thumbnails.split(",")
+    console.log("Product: " + product)
+    const productClass = new Product()
+    const result = await productClass.updateProduct(pid, product)    
+    return res.status(200).render('editProduct', { product, pid, result});    
 }
 
 const showProductById = async (req, res) => {
@@ -29,7 +77,7 @@ const showProductById = async (req, res) => {
         msg: 'No se pudo obtener la sesión del usuario',
     })
     if(product){
-        res.render('productDetail',  { product })
+        res.render('productDetail',  { product: productHandlebars })
     }else{
         res.status(500).json({
             status: 'Error',
@@ -44,23 +92,36 @@ const createProduct = async (req, res) => {
 
 const storeProduct = async (req, res) => {
     let product = req.body
+    product.thumbnails = product.thumbnails.split(",")
+    
     const productClass = new Product()
     const result = await productClass.storeProduct(product)
 
-    return res.status(200).render('createProduct', { product, result});
-    return res.status(200).json({
-        status: result
-    });
-    const { title, description, code, price, status, stock, category, thumbnails } = req.body
-    // const productClass = new Product()    
-    // const result = await productClass.storeProduct(title, description, code, price, status, stock, category, thumbnails)
-    // const newProduct = await productClass.storeProduct(product)
-
-    return res.status(200).render('createProduct', {isAdmin:req.session.user.role==="Admin"});
-    // return res.status(200).json({
-    //     status: result
-    // });
-    // return productClass.storeProduct()
+    return res.status(200).render('createProduct', { product, result});    
 }
 
-module.exports = { showAllProducts, showProductById, createProduct, storeProduct }
+const deleteProduct = async (req, res) => {
+    try {
+        let {pid} = req.params
+        console.log("ProductoController")
+        const productClass = new Product()
+        const result = await productClass.deleteProduct(pid)
+        if(result){
+            res.status(500).json({
+                status: 'success',
+                msg: 'El producto se eliminó correctamente',
+            })
+        }else{
+            res.status(500).json({
+                status: 'Error',
+                msg: 'No se pudo eliminar el producto',
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 'Error',
+            msg: 'No se pudo eliminar el producto',
+        })
+    }    
+}
+module.exports = { showAllProducts, editProduct, updateProduct, showProductById, createProduct, storeProduct, deleteProduct }

@@ -1,6 +1,7 @@
 // const UserModel = require("../dao/mongo/models/user.model");
 const Cart = require("../dao/mongo/classes/cart.class");
 const CartModel = require("../dao/mongo/models/cart.model");
+const Product = require("../dao/mongo/classes/product.class");
 const ProductModel = require("../dao/mongo/models/product.model");
 
 const getAll = async (req, res) => {
@@ -27,23 +28,12 @@ const getCartById = async (req, res) => {
     }
 }
 
-const getTotal = async (req, res) => {
-    const { cid } = req.params
-    try {
-        const cartClass = new Cart()
-        const cart = await cartClass.getTotal(cid)
-        console.log("LLEGO")
-        res.status(200).send(cart)
-    } catch (error) {
-        res.status(404).send({ error: 'Error al intentar encontrar carrito del usuario' })
-    }
-}
 
 const getMyCart = async (req, res) => {
     try {
         if(req.session.user.cart){
             const cartClass = new Cart()
-            const [cart, products] = await cartClass.getCartById(req.session.user.cart)            
+            const [cart, products] = await cartClass.getCartById(req.session.user.cart)
             let total = 0
 
             let  productsHandlebars = products.map((item) => {
@@ -75,7 +65,6 @@ const getMyCart = async (req, res) => {
         }else{
             res.status(404).send({ error: 'Error al intentar encontrar carrito del usuario' })            
         }        
-        // res.status(200).send(JSON.stringify(cartSelectedPopulated, null, '\t'))
     } catch (error) {
         res.status(404).send({ error: 'Error al intentar encontrar carrito del usuario' })
     }
@@ -171,4 +160,55 @@ const deleteProductFromCart = async (req, res) => {
     }
 }
 
-module.exports = { getAll, getCartById, getTotal, getMyCart, createCart, createEmptyCart, updateProductQuantity, deleteCart, deleteProductFromCart }
+const purchase = async (req, res) => {
+    try {
+        const { cid } = req.params
+        const cartClass = new Cart()
+        
+        let total = 0
+        const [ticket, prodStock, prodOutStock, isTicket] = await cartClass.purchase(cid, req.session.user.email)
+
+        let  productsHandlebars = prodOutStock.map((item) => {
+            const subtotal = (item.product.quantity * item.product.product.price)
+            total = total + subtotal
+            
+            return {
+                _id: item.product.product._id,
+                title: item.product.product.title,
+                description: item.product.product.description,
+                code: item.product.product.code,
+                price: item.product.product.price,
+                status: item.product.product.status,
+                stock: item.product.product.stock,
+                category: item.product.product.category,
+                thumbnails: item.product.product.thumbnails,
+                quantity: item.product.quantity, 
+                subtotal: subtotal
+            };
+        });
+
+        let ticketHandlebars = ""
+        if(ticket){
+            ticketHandlebars = {
+                code: ticket.code,
+                amount: ticket.amount,
+                purchaser: ticket.purchaser,
+                purchaser_datetime: ticket.purchaser_datetime
+            }
+        }
+
+        return res.status(200).render('ticket', {
+            productsOutStock: productsHandlebars,
+            ticket: ticketHandlebars,
+            isTicket: isTicket
+        })
+    } catch (e) {
+        console.log('Cart Controller Error: ' + e)
+        return res.status(500).json({
+            status: 'Error',
+            msg: 'No se pudo eliminar el producto correctamente',
+        });
+    }
+}
+
+module.exports = { getAll, getCartById, getMyCart, createCart, createEmptyCart, updateProductQuantity, deleteCart, deleteProductFromCart, purchase }

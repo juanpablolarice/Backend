@@ -71,8 +71,8 @@ app.use(express.static(__dirname+'/public'))
 app.use('/', routesAuth)
 app.use('/', routesProducts)
 app.use('/', routesUsers)
-app.use('/api/carts', routesCarts)
-app.use('/api/sessions', routesSessions)
+app.use('/', routesCarts)
+app.use('api/sessions', routesSessions)
 
 
 io.on('connection', async (socket)=>{

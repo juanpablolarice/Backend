@@ -106,6 +106,7 @@ const updateProductQuantity = async (req, res) => {
         const { cid, pid } = req.params
         const { quantity, operation } = req.body
 
+        console.log("LLEGO")
         if(req.session.user.role === 'Admin'){
             return res.status(500).json({
                 status: 'error',

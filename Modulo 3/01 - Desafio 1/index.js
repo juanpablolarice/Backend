@@ -26,6 +26,7 @@ const routesSessions = require('./src/routes/sessions')
 const routesProducts = require('./src/routes/products')
 const routesCarts = require('./src/routes/carts')
 const routesUsers = require('./src/routes/users')
+const routesMocking = require('./src/routes/mocking')
 
 
 app.engine('handlebars', handlebars.engine({
@@ -73,6 +74,7 @@ app.use('/', routesProducts)
 app.use('/', routesUsers)
 app.use('/', routesCarts)
 app.use('api/sessions', routesSessions)
+app.use('/', routesMocking)
 
 
 let messages = []

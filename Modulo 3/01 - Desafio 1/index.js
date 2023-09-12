@@ -75,20 +75,16 @@ app.use('/', routesCarts)
 app.use('api/sessions', routesSessions)
 
 
-io.on('connection', async (socket)=>{
-    console.log("Cliente conectado")
+let messages = []
+// socket
+io.on('connection', (socket) => {
+    console.log('New user conected')
+    // socket.emit('welcome', 'Hola cliente, bienvenido.')
 
-    // socket.emit('products', products)
-
-    socket.on('addProduct', (data)=>{
-    //   // let response = prod.addProduct(data.title, data.description, data.code, data.price, data.status, data.stock, data.thumbnails)
-      console.log("Add product in index.js")
+    socket.on('new-message', (data) => {
+        messages.push(data)
+        io.sockets.emit('messages-all', messages)
     })
-    //
-    // socket.on('deleteProduct', async (data) => {
-    //     // let response = await prod.deleteProduct(data)
-    //     console.log(response)
-    // })
 })
 
 server.listen(process.env.PORT, () => {

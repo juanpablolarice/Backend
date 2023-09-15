@@ -7,10 +7,12 @@
     </div>
     <form action="/products/store" method="post">
         <div class="row">
-            {{#if result}}
+            {{#if message}}
                 <div class="col-12 mb-3">
-                    <div class="alert alert-info mt-3" role="alert">
-                        {{ result }}
+                    <div class="alert alert-{{ status }} mt-3" role="alert">
+                        {{#each message}}
+                            {{{ this }}}<br>
+                        {{/each}}
                     </div>
                 </div>
             {{/if}}
@@ -33,8 +35,8 @@
             <div class="col-6 mb-3">
                 <label for="status" class="form-label text-white">Estado</label>
                 <select class="form-select" name="status" id="status" aria-label="Estado">                    
-                    <option value="1" selected>Activo</option>
-                    <option value="0">Inactivo</option>
+                    <option value="true" selected>Activo</option>
+                    <option value="false">Inactivo</option>
                 </select>
             </div>
             <div class="col-6 mb-3">

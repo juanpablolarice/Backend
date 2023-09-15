@@ -3,6 +3,8 @@ const ProductModel = require('../dao/mongo/models/product.model')
 const Cart = require('../dao/mongo/classes/cart.class')
 const CartModel = require('../dao/mongo/models/cart.model')
 
+
+
 const showAllProducts = async (req, res) => {    
     const productClass = new Product()
     const { category, status, limit, sort, page } = req.query    
@@ -92,12 +94,18 @@ const createProduct = async (req, res) => {
 
 const storeProduct = async (req, res) => {
     let product = req.body
-    product.thumbnails = product.thumbnails.split(",")
-    
     const productClass = new Product()
-    const result = await productClass.storeProduct(product)
 
-    return res.status(200).render('createProduct', { product, result});    
+    let [errors, status] = await productClass.validateProduct(product)
+    product.thumbnails = product.thumbnails.split(",")
+    if(errors.length>0){
+        return res.status(500).render('createProduct', { product, message: errors, status});
+        console.log("Vuelve al form")
+    }else{
+        let [message, status] = await productClass.storeProduct(product)
+        return res.status(200).render('createProduct', { product, message, status});
+        console.log("Crea el producto")
+    }
 }
 
 const deleteProduct = async (req, res) => {

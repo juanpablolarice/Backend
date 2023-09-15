@@ -255,10 +255,11 @@ class Cart {
                 return JSON.stringify(response)                
             }
         } catch (error) {
-            res.status(500).json({
-                status: 'error',
-                msg: 'Error',
-            })
+            const response = {
+                status: 'danger',
+                msg: 'error'
+            }                
+            return JSON.stringify(response) 
         }
     }
 

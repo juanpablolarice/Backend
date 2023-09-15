@@ -7,6 +7,104 @@ class Product {
         this.data = []
     }
 
+    validateProduct = async (product) => {
+        console.log("ENTRO")
+        let errors = []
+        let status = 'success'
+        if(product.title === '' || typeof product.title !== 'string'){
+            errors.push('El <strong>título</strong> del producto es obligatorio')
+            status = 'danger'
+            console.log(`
+                title:{
+                    type:String,
+                    unique:true,
+                    required:true
+                }
+            `)
+        }
+        if(product.description === '' || typeof product.description !== 'string'){
+            errors.push('La <strong>descripción</strong> del producto es obligatoria')
+            status = 'danger'
+            console.log(`
+                description:{
+                    type:String,
+                    required:true
+                }
+            `)
+        }
+        if(product.code === '' || typeof product.code !== 'string'){
+            errors.push('El <strong>código</strong> del producto es obligatorio')
+            status = 'danger'
+            console.log(`
+                code:{
+                    type:String,
+                    unique:true,
+                    required:true
+                }
+            `)
+        }
+        // product.price = parseFloat(product.price)
+        if(product.price === ''){
+            errors.push('El <strong>precio</strong> del producto es obligatorio')
+            status = 'danger'
+            console.log(`
+                price:{
+                    type:Number,
+                    required:true
+                }
+            `)
+        }
+        if(product.status === 'true'){
+            product.status = true
+        }else{
+            product.status = false
+        }
+        if(product.status === null || typeof product.status !== 'boolean'){
+            errors.push('El <strong>estado</strong> del producto es obligatorio  ' + typeof product.status)
+            status = 'danger'
+            console.log(`
+                status:{
+                    type:Boolean,
+                    required:true,
+                }
+            `)
+        }
+        // product.stock = parseFloat(product.stock)
+        if(product.stock === ''){
+            errors.push('El <strong>stock</strong> del producto es obligatorio')
+            status = 'danger'
+            console.log(`
+                stock:{
+                    type:Number,
+                    required:true
+                }
+            `)
+        }
+
+        if(product.category === '' || typeof product.category !== 'string'){
+            errors.push('La <strong>categoría</strong> del producto es obligatoria')
+            status = 'danger'
+            console.log(`
+                category:{
+                    type:String,
+                    required:true,
+                    enum:['Televisores', 'Celulares', 'Notebooks']
+                }
+            `)
+        }
+        if(typeof product.thumbnails !== 'string'){
+            errors.push('La <strong>imagen</strong> del producto no esta en el formato correcto')
+            status = 'danger'
+            console.log(`
+                thumbnails:[{
+                    type:String
+                }]
+            `)
+        }
+        console.log(errors)
+        return [errors, status];
+    }
+
     allProducts = async (category, status, limit, sort, page) => {
         let dataProducts = ''
         try {
@@ -97,20 +195,27 @@ class Product {
     }
 
     storeProduct = async (newProduct) => {
+        let message = ''           
+        let status = 'success'
         try {
             const code = await productModel.findOne({ code: newProduct.code }, '_id title description code price status stock category thumbnails')
             const title = await productModel.findOne({ title: newProduct.title }, '_id title description code price status stock category thumbnails')
-                       
+
             if(code){
-                return "Ya existe un producto con ese código"
+                message = 'Ya existe un producto con ese código'
+                status = 'danger'
             }else if(title){
-                return "Ya existe un producto con ese título"
+                message = 'Ya existe un producto con ese título'
+                status = 'danger'
             }else{
                 let result = await productModel.create(newProduct)
-                return "El producto se creó correctamente"
+                message = 'El producto se creó correctamente'                
             }
-        } catch (e) {            
-            return "Ocurrió un error inesperado"
+            return [message, status]
+        } catch (e) {
+            message = 'Ocurrió un error inesperado'
+            status = 'danger'
+            return [message, status]
         }
     }
 

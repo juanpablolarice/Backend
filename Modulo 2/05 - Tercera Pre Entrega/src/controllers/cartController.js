@@ -164,12 +164,11 @@ const purchase = async (req, res) => {
     try {
         const { cid } = req.params
         const cartClass = new Cart()
+        let emailStatus = false
         
         let total = 0
         const [ticket, prodStock, prodOutStock, isTicket] = await cartClass.purchase(cid, req.session.user.email)
         
-        // prodStock.map((prod) => {console.log(prod)})
-        // res.send(prodStock)
         let  productsHandlebars = prodOutStock.map((item) => {
             const subtotal = (item.product.quantity * item.product.product.price)
             total = total + subtotal
@@ -197,14 +196,14 @@ const purchase = async (req, res) => {
                 purchaser: ticket.purchaser,
                 purchaser_datetime: ticket.purchaser_datetime
             }
-            console.log('PURCHASE:' + prodStock)
-            const result = sendEmailCheckout(prodStock, ticket)
+            emailStatus = sendEmailCheckout(prodStock, ticket)
         }
 
         return res.status(200).render('ticket', {
             productsOutStock: productsHandlebars,
             ticket: ticketHandlebars,
-            isTicket: isTicket
+            isTicket: isTicket,
+            emailStatus: emailStatus
         })
     } catch (e) {
         console.log('Cart Controller Error: ' + e)

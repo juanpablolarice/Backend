@@ -21,6 +21,7 @@ transporter.verify(function(error, success) {
 })
 
 const sendEmailCheckout = async (products, ticket) => { 
+    let quantity = 0
     let template = (`
         <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
             <html xmlns="http://www.w3.org/1999/xhtml">
@@ -34,7 +35,7 @@ const sendEmailCheckout = async (products, ticket) => {
                         body{width:100% !important; -webkit-text-size-adjust:100%; -ms-text-size-adjust:100%; margin:0; padding:0; font-family: Helvetica, arial, sans-serif;}
                         .ExternalClass {width:100%;}
                         .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {line-height: 100%;}
-                        .backgroundTable {margin:0; padding:0; width:100% !important; line-height: 100% !important;}
+                        .backgroundTable {margin:20px; padding:0; width:100% !important; line-height: 100% !important;}
                         .main-temp table { border-collapse:collapse; mso-table-lspace:0pt; mso-table-rspace:0pt; font-family: Helvetica, arial, sans-serif;}
                         .main-temp table td {border-collapse: collapse;}
                     </style>
@@ -73,41 +74,39 @@ const sendEmailCheckout = async (products, ticket) => {
                                                 <td style="padding-top: 0;">
                                                     <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #eeeeee;">
                                                         <tbody>`)
-    products.map((product) => {
-        const quantity = product.quantity
-        // prod.product.map((product) => {
-            template += (`
+    products.map((prod) => {
+        template += (`
                                                             <tr>
                                                                 <td rowspan="4" style="padding-right: 10px; padding-bottom: 10px;">
-                                                                    <img style="height: 80px;" src="images/product-1.jpg" alt="Product Image" />
+                                                                    <img style="height: 80px;" src="${prod.product.thumbnails[0]}" alt="Product Image" />
                                                                 </td>
                                                                 <td colspan="2" style="font-size: 14px; font-weight: bold; color: #666666; padding-bottom: 5px;">
-                                                                    ${product.title}
+                                                                    ${prod.product.title}
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
-                                                                    Cantidad: ${quantity}
+                                                                    
                                                                 </td>
                                                                 <td style="width: 130px;"></td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="font-size: 14px; line-height: 18px; color: #757575;">
-                                                                    ${product.description}
+                                                                    ${prod.product.description}
                                                                 </td>
                                                                 <td style="font-size: 14px; line-height: 18px; color: #757575; text-align: right;">
-                                                                    $${product.price} Por unidad
+                                                                    $${prod.product.price} Por unidad
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td style="font-size: 14px; line-height: 18px; color: #757575; padding-bottom: 10px;">
-                                                                    
+                                                                    Cantidad: ${prod.quantity}
                                                                 </td>
                                                                 <td style="font-size: 14px; line-height: 18px; color: #757575; text-align: right; padding-bottom: 10px;">
-                                                                    <b style="color: #666666;">$1,234.50</b> Subtotal
+                                                                    <b style="color: #666666;">$${prod.quantity * prod.product.price}</b> Subtotal
                                                                 </td>
                                                             </tr>
-            `)
+        `)
     })
     template += (`
                                                         </tbody>
@@ -126,7 +125,7 @@ const sendEmailCheckout = async (products, ticket) => {
                                                                     Total
                                                                 </td>
                                                                 <td style="font-size: 14px; font-weight: bold; line-height: 18px; color: #666666; padding-top: 10px; text-align: right;">
-                                                                    ${ticket.amount}
+                                                                    $${ticket.amount}
                                                                 </td>
                                                             </tr>
                                                         </tbody>
@@ -154,14 +153,12 @@ const sendEmailCheckout = async (products, ticket) => {
         try {
             let result = transporter.sendMail(mailOptions, (error, info) => {
                 if(error){
-                    console.log(error)
-                    return error                    
+                    return false
                 }                
             })
-            return result
+            return true
         } catch (error) {
-            console.log(error)
-            return error            
+            return false
         }
 }
 

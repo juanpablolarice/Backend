@@ -302,8 +302,8 @@ class Cart {
                             //Multiplicamos el precio por la cantidad y lo sumamos al total
                             let priceProduct = prod.product.price * prod.quantity                        
                             amount += priceProduct
-                            //pusheamos al array para luego modificar el stock del producto con el nuevo stock
-                            prodStock.push({ products: prod });
+                            //pusheamos al array para luego modificar el stock del producto con el nuevo stock                            
+                            prodStock.push(prod);
                             const ProductModel = new productModel()
                             const product = await productModel.findById(prod.product._id)
                             product.stock = newStock

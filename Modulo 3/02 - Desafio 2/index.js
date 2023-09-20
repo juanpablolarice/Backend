@@ -10,6 +10,8 @@ const MongoStore = require('connect-mongo')
 const passport = require('passport')
 const initializePassport = require('./src/config/passport')
 const dotenv = require('dotenv').config()
+const config = require('./src/config/config')
+const { addLogger } = require('./src/config/logger')
 
 
 const http = require('http')
@@ -38,25 +40,23 @@ app.engine('handlebars', handlebars.engine({
     partialsDir: ['src/views/partials/'],
     defaultLayout: 'main'
 }));
-// handlebars.registerHelper("compare", (ctx, args) => {
-//     console.log("ONE: " + args[0])
-//     console.log("TWO: " + args[1])
-//     if (args[0] === args[1]) {
-//         return true
-//     } else {
-//         return false
-//     }
-// });
 
 app.set('views', __dirname+'/src/views')
 app.set('view engine', 'handlebars' )
+
+// app.use(addLogger)
+app.get('/logger', addLogger, (req, res) => {
+    // req.logger.warn("Prueba de log level warn!")
+    // req.logger.info("Prueba de log level info!")
+    res.send('Prueba de logger')
+})
 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 
 app.use(session({
     store: MongoStore.create({
-        mongoUrl: process.env.DB
+        mongoUrl: config.DB
     }),
     secret:'secretCoder',
     resave:true,

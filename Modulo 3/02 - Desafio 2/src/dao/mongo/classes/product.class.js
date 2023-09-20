@@ -100,8 +100,7 @@ class Product {
                     type:String
                 }]
             `)
-        }
-        console.log(errors)
+        }        
         return [errors, status];
     }
 
@@ -177,6 +176,8 @@ class Product {
     }
     
     updateProduct = async (productId, product) => {
+        let message = []           
+        let status = 'success'
         try {
             await productModel.updateOne({_id: productId},  {
                 title: product.title,
@@ -188,9 +189,12 @@ class Product {
                 category: product.category
             });
             // Falta actualizar el array de imagenes
-            return "El producto se actualizó correctamente"
+            message.push('El producto se actualizo correctamente')
+            return [message, status]
         } catch (e) {            
-            return "Ocurrió un error inesperado"
+            message.push('Ocurrió un error inesperado')
+            status = 'danger'
+            return [message, status]
         }
     }
 

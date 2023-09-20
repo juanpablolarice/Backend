@@ -62,11 +62,21 @@ const editProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     const { pid } = req.params
     let product = req.body
-    product.thumbnails = product.thumbnails.split(",")
-    console.log("Product: " + product)
     const productClass = new Product()
-    const result = await productClass.updateProduct(pid, product)    
-    return res.status(200).render('editProduct', { product, pid, result});    
+    // product.thumbnails = product.thumbnails.split(",")    
+    // const productClass = new Product()
+    // const result = await productClass.updateProduct(pid, product)    
+    // return res.status(200).render('editProduct', { product, pid, result});    
+    let [errors, status] = await productClass.validateProduct(product)
+    product.thumbnails = product.thumbnails.split(",")
+    if(errors.length>0){
+        return res.status(500).render('editProduct', { pid, product, message: errors, status});
+    }else{
+        let [message, status] = await productClass.updateProduct(pid, product)
+        console.log(message)
+        // let [message, status] = await productClass.storeProduct(product)
+        return res.status(200).render('editProduct', { pid, product, message, status});        
+    }
 }
 
 const showProductById = async (req, res) => {

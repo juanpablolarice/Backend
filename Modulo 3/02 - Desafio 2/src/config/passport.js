@@ -14,8 +14,7 @@ const initializePassport = () => {
             try {
                 let userData = req.body
                 // BUSCAR SI EXISTE EL USUARIO                
-                const user = await userModel.findOne({email: username})
-                // let user = await userModel.findOne({email: username}, '_id name email phone age cart role')
+                const user = await userModel.findOne({email: username})                
                 if(user) {
                     done(null, false)
                 }                
@@ -33,7 +32,6 @@ const initializePassport = () => {
                 }
                 
                 let result = await userModel.create(userNew)
-                // const userCreated = await userModel.findOne({email: userData.email}, '_id name email phone age cart role')
                 const userCreated = await userModel.findOne({email: username})
                 const userDto = new userDTO(userCreated)
                 done(null, userDto)
@@ -102,11 +100,9 @@ const initializePassport = () => {
                     const userDto = new userDTO(result)
                     done(null, userDto)
                 }else{
-                    console.log("encontro user", user)
                     done(null, user)
                 }
             }catch(error){
-                console.log(error)
                 done(error)
             }
         }

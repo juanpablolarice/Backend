@@ -3,6 +3,7 @@ const Cart = require("../dao/mongo/classes/cart.class");
 const CartModel = require("../dao/mongo/models/cart.model");
 const Product = require("../dao/mongo/classes/product.class");
 const ProductModel = require("../dao/mongo/models/product.model");
+const { sendEmailCheckout } = require("../controllers/emailController");
 
 const getAll = async (req, res) => {
     try{
@@ -27,7 +28,6 @@ const getCartById = async (req, res) => {
         res.status(404).send({ error: 'Error al intentar encontrar carrito del usuario' })
     }
 }
-
 
 const getMyCart = async (req, res) => {
     try {
@@ -106,7 +106,6 @@ const updateProductQuantity = async (req, res) => {
         const { cid, pid } = req.params
         const { quantity, operation } = req.body
 
-        console.log("LLEGO")
         if(req.session.user.role === 'Admin'){
             return res.status(500).json({
                 status: 'error',
@@ -165,10 +164,11 @@ const purchase = async (req, res) => {
     try {
         const { cid } = req.params
         const cartClass = new Cart()
+        let emailStatus = false
         
         let total = 0
         const [ticket, prodStock, prodOutStock, isTicket] = await cartClass.purchase(cid, req.session.user.email)
-
+        
         let  productsHandlebars = prodOutStock.map((item) => {
             const subtotal = (item.product.quantity * item.product.product.price)
             total = total + subtotal
@@ -196,12 +196,14 @@ const purchase = async (req, res) => {
                 purchaser: ticket.purchaser,
                 purchaser_datetime: ticket.purchaser_datetime
             }
+            emailStatus = sendEmailCheckout(prodStock, ticket)
         }
 
         return res.status(200).render('ticket', {
             productsOutStock: productsHandlebars,
             ticket: ticketHandlebars,
-            isTicket: isTicket
+            isTicket: isTicket,
+            emailStatus: emailStatus
         })
     } catch (e) {
         console.log('Cart Controller Error: ' + e)

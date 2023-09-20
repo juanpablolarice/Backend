@@ -7,13 +7,15 @@
     </div>
     <form action="/api/product/{{pid}}/update" method="post">
         <div class="row">
-            {{#if result}}
+            {{#if message}}
                 <div class="col-12 mb-3">
-                    <div class="alert alert-info mt-3" role="alert">
-                        {{ result }}
+                    <div class="alert alert-{{ status }} mt-3" role="alert">
+                        {{#each message}}
+                            {{{ this }}}<br>
+                        {{/each}}
                     </div>
                 </div>
-            {{/if}}            
+            {{/if}}          
             <div class="col-12 mb-3">
                 <label for="title" class="form-label text-white">Título</label>
                 <input type="Text" class="form-control" name="title" id="title" placeholder="Título" value="{{#if product}}{{product.title}}{{/if}}">

@@ -1,7 +1,7 @@
-const Product = require('../dao/mongo/classes/product.class')
-const ProductModel = require('../dao/mongo/models/product.model')
-const Cart = require('../dao/mongo/classes/cart.class')
-const CartModel = require('../dao/mongo/models/cart.model')
+const Product = require('../services/dao/mongo/classes/product.class')
+const ProductModel = require('../services/dao/mongo/models/product.model')
+const Cart = require('../services/dao/mongo/classes/cart.class')
+const CartModel = require('../services/dao/mongo/models/cart.model')
 
 
 
@@ -62,13 +62,13 @@ const editProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
     const { pid } = req.params
     let product = req.body
-    const productClass = new Product()   
+    const productClass = new Product() 
     let [errors, status] = await productClass.validateProduct(product)
     product.thumbnails = product.thumbnails.split(",")
     if(errors.length>0){
         return res.status(500).render('editProduct', { pid, product, message: errors, status});
     }else{
-        let [message, status] = await productClass.updateProduct(pid, product)
+        let [message, status] = await productClass.updateProduct(pid, product)        
         return res.status(200).render('editProduct', { pid, product, message, status});        
     }
 }

@@ -1,5 +1,5 @@
-import chai from 'chai';
-import supertest from 'supertest'
+const chai = require('chai');
+const supertest = require ('supertest');
 
 
 const expect = chai.expect

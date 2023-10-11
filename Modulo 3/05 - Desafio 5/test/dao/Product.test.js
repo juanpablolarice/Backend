@@ -1,6 +1,6 @@
-import ProductDao from '../../src/services/dao/mongo/models/product.model.js'
-import mongoose from 'mongoose'
-import chai from 'chai'
+const ProductDao = require('../../src/services/dao/mongo/models/product.model.js')
+const mongoose = require('mongoose')
+const chai = require('chai');
 
 mongoose.connect('mongodb+srv://JuanLarice:Coder2023@cluster0.z95xyv3.mongodb.net')
 const expect = chai.expect

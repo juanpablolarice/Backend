@@ -3,12 +3,14 @@ const config = require('../config/config')
 const mongoDB = require('./dao/mongo/db')
 const dbManager = new mongoDB(config.DB);
 const productMongodb = require('./dao/mongo/classes/product.class.js')
+const cartMongodb = require('./dao/mongo/classes/cart.class.js')
 const userMongodb = require('./dao/mongo/classes/user.class.js')
 const productFilesystem = require('./dao/filesystem/classes/product.class.js')
 const userFilesystem = require('./dao/filesystem/classes/user.class.js')
 
 
 let productClass
+let cartClass
 let userClass
 // async function mongoConnect() {
 
@@ -26,6 +28,7 @@ switch (config.PERSISTENCE) {
         dbManager.connect()
         // const { default: Product } = await import('./dao/mongo/classes/product.class.js');
         productClass = new productMongodb();
+        cartClass = new cartMongodb();
         console.log("PERSISTENCE: mongodb")
         break;
     case 'filesystem':
@@ -38,4 +41,4 @@ switch (config.PERSISTENCE) {
         break;
 }
 
-module.exports = { productClass }
+module.exports = { productClass, cartClass }

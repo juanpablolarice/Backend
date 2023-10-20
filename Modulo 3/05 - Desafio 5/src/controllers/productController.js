@@ -5,8 +5,6 @@ const Cart = require('../services/dao/mongo/classes/cart.class')
 const CartModel = require('../services/dao/mongo/models/cart.model')
 
 
-
-
 const showAllProducts = async (req, res) => {    
     // const productClass = new Product()
     console.log("ENTRO A PRODUCT CONTROLLER")
@@ -104,7 +102,7 @@ const createProduct = async (req, res) => {
 
 const storeProduct = async (req, res) => {
     let product = req.body
-    const productClass = new Product()
+    // const prod = new productClass()
 
     let [errors, status] = await productClass.validateProduct(product)
     product.thumbnails = product.thumbnails.split(",")

@@ -104,7 +104,18 @@ class Product {
         return [errors, status];
     }
 
+    getAll = async () => {
+        try {
+            const products = await productModel.find()
+            console.log("Product Class - getAll : " + products)
+            return { products: products}
+        } catch (error) {
+            return { error: 'Se produjo un error inesperado' }
+        }
+    }
+
     allProducts = async (category, status, limit, sort, page) => {
+        console.log("PRODUCT CLASS: allProducts")
         let dataProducts = ''
         try {
             if (category && status) {
@@ -156,7 +167,8 @@ class Product {
     }
     
     
-    getProductById = async (id) => {
+    getProductById = async (id) => {        
+        console.log("PRODUCT CLASS: getProductById")
         try {
             const product = await productModel.findOne({ _id: id });
             return product;
@@ -176,6 +188,7 @@ class Product {
     }
     
     updateProduct = async (productId, product) => {
+        console.log("PRODUCT CLASS: updateProduct")
         let message = []           
         let status = 'success'
         try {
@@ -199,6 +212,7 @@ class Product {
     }
 
     storeProduct = async (newProduct) => {
+        console.log("PRODUCT CLASS: storeProduct")
         let message = ''           
         let status = 'success'
         try {
@@ -224,6 +238,7 @@ class Product {
     }
 
     getArrProductsData = async (arr) => {
+        console.log("PRODUCT CLASS: getProductData")
         const productsData = [];
 
         for (const id of arr) {
@@ -235,6 +250,7 @@ class Product {
     }
 
     deleteProduct = async (pid) => {        
+        console.log("PRODUCT CLASS: deleteProduct")
         try {
             console.log("Product Class")
             const resul = await productModel.deleteOne({_id: pid})

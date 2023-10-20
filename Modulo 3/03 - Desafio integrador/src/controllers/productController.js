@@ -6,10 +6,21 @@ const CartModel = require('../services/dao/mongo/models/cart.model')
 
 
 
+const getAll = async (req, res) => {    
+    try {
+        const payload = await productClass.getAll()
+        console.log("PRODUCT CONTROLLER: getAll")
+        console.log("PAYLOAD: " + payload.error)
+    
+        res.status(200).send({ payload: payload})
+    } catch (error) {
+        return { error: 'Se produjo un error inesperado' }
+    }
+}
 
 const showAllProducts = async (req, res) => {    
     // const productClass = new Product()
-    console.log("ENTRO A PRODUCT CONTROLLER")
+    console.log("PRODUCT CONTROLLER: showAllProducts")
     const { category, status, limit, sort, page } = req.query    
     const [products, rest] = await productClass.allProducts(category, status, limit, sort, page)
     const cartClass = new Cart()    
@@ -21,6 +32,13 @@ const showAllProducts = async (req, res) => {
         isAdmin = false
     }
     
+    // return res.status(200).send({ 
+    //     products: products, 
+    //     cart: cart.products,
+    //     pagination: rest,
+    //     user: req.session.user,
+    //     isAdmin: isAdmin
+    // });
     return res.status(200).render('products', { 
         products, 
         cart: cart.products,
@@ -32,10 +50,36 @@ const showAllProducts = async (req, res) => {
 
 const editProduct = async (req, res) => {
     try {
-        const { pid } = req.params
-        const productClass = new Product()
+        const { pid } = req.params    
         const product = await productClass.getProductById(pid)
+        console.log("PRODUCT CONTROLLER: editProduct")
+        
         if(product){
+            res.send({payload: product})            
+        }else{
+            res.status(500).json({
+                status: 'Error',
+                msg: 'No se pudo obtener la sesión del usuario',
+            })
+        }
+    } catch (error) {
+        res.status(500).json({
+            status: 'Error',
+            error: error,
+            msg: 'No se pudo obtener la sesión del usuario',
+        })
+    }
+}
+
+const editProductShow = async (req, res) => {
+    try {
+        const { pid } = req.params    
+        const product = await productClass.getProductById(pid)
+        console.log("PRODUCT CONTROLLER: editProductShow")
+        console.log("EDIT: " + product)
+        
+        if(product){
+            // res.send({payload: product})
             let thumbs = product.thumbnails.toString()            
             productHandlebars = {
                 _id: pid, 
@@ -48,18 +92,56 @@ const editProduct = async (req, res) => {
                 category: product.category,
                 thumbnails: thumbs
             }
-            
-            return res.status(200).render('editProduct', {
-                isAdmin:req.session.user.role==="Admin", 
-                product: productHandlebars,
-                pid: pid
-            });
+            res.status(200).render('editProduct',  { product: productHandlebars })
         }else{
-
+            res.status(500).json({
+                status: 'Error',
+                msg: 'No se pudo obtener la sesión del usuario',
+            })
         }
     } catch (error) {
-        
+        res.status(500).json({
+            status: 'Error',
+            error: error,
+            msg: 'No se pudo obtener la sesión del usuario',
+        })
     }
+    // try {
+    //     const { pid } = req.params
+    //     const productClass = new Product()
+    //     console.log("PRODUCT ID: " + pid)
+    //     const product = await productClass.getProductById(pid)
+    //     console.log("PRODUCT: " + product)
+    //     if(product){
+    //         let thumbs = product.thumbnails.toString()            
+    //         productHandlebars = {
+    //             _id: pid, 
+    //             title: product.title,
+    //             description: product.description,
+    //             code: product.code,
+    //             price: product.price,
+    //             status: product.status,
+    //             stock: product.stock,
+    //             category: product.category,
+    //             thumbnails: thumbs
+    //         }
+    //         console.log("EDIT PRODUCT")
+    //         return res.status(200).send({
+    //             // isAdmin:req.session.user.role==="Admin", 
+    //             product: productHandlebars
+    //             // pid: pid
+    //         });
+    //         // return res.status(200).render('editProduct', {
+    //         //     isAdmin:req.session.user.role==="Admin", 
+    //         //     product: productHandlebars,
+    //         //     pid: pid
+    //         // });
+    //     }else{
+
+    //     }
+    // } catch (error) {
+        
+    // }
 }
 
 const updateProduct = async (req, res) => {
@@ -77,19 +159,41 @@ const updateProduct = async (req, res) => {
 }
 
 const showProductById = async (req, res) => {
-    const { id } = req.params
-    const productClass = new Product()
-    const product = await productClass.getProductById(id)
-
-    console.log("ENTRO")
+    const { pid } = req.params    
+    const product = await productClass.getProductById(pid)
+    console.log("PRODUCT CONTROLLER: showProductById")
     
-    res.status(500).json({
-        status: 'Error',
-        msg: 'No se pudo obtener la sesión del usuario',
-    })
+    if(product){
+        let thumbs = product.thumbnails.toString()            
+            productHandlebars = {
+                _id: pid, 
+                title: product.title,
+                description: product.description,
+                code: product.code,
+                price: product.price,
+                status: product.status,
+                stock: product.stock,
+                category: product.category,
+                thumbnails: thumbs
+            }
+        res.status(200).render('productDetail',  { product: productHandlebars })
+        // res.render('productDetail',  { product: product })
+    }else{
+        res.status(500).json({
+            status: 'Error',
+            msg: 'No se pudo obtener la sesión del usuario',
+        })
+    }
+}
+
+const getProductById = async (req, res) => {
+    const { pid } = req.params    
+    const product = await productClass.getProductById(pid)
+    console.log("PRODUCT CONTROLLER: getProductById")
+    
     if(product){
         res.send({payload: product})
-        res.render('productDetail',  { product: productHandlebars })
+        // res.render('productDetail',  { product: product })
     }else{
         res.status(500).json({
             status: 'Error',
@@ -105,6 +209,7 @@ const createProduct = async (req, res) => {
 const storeProduct = async (req, res) => {
     let product = req.body
     const productClass = new Product()
+    console.log("PRODUCT CONTROLLER: storeProduct")
 
     let [errors, status] = await productClass.validateProduct(product)
     product.thumbnails = product.thumbnails.split(",")
@@ -139,4 +244,4 @@ const deleteProduct = async (req, res) => {
         })
     }    
 }
-module.exports = { showAllProducts, editProduct, updateProduct, showProductById, createProduct, storeProduct, deleteProduct }
+module.exports = { getAll, showAllProducts, editProduct, editProductShow, updateProduct, showProductById, getProductById, createProduct, storeProduct, deleteProduct }

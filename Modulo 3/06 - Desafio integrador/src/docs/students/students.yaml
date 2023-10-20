@@ -1,0 +1,80 @@
+paths:
+  /api/students/:
+    get:
+      summary: Obtiene todos los estudiantes
+      tags:
+        - Estudiantes
+      responses:
+        "200":
+          description: La operación fue exitosa!!
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: array
+          #       items:
+          #         $ref: '#components/schemas/Product'
+        "400":
+          description: Se envio un dato no esperado
+        "500":
+          description: Error inesperado en el server
+  /api/students/createStudent/:
+    post:
+      summary: Creo un estudiante
+      tags:
+        - Estudiantes
+      responses:
+        "200":
+          description: La operación fue exitosa!!
+          # content:
+          #   application/json:
+          #     schema:
+          #       type: array
+          #       items:
+          #         $ref: '#components/schemas/Product'
+        "400":
+          description: Se envio un dato no esperado
+        "500":
+          description: Error inesperado en el server  
+components:
+  schemas:
+    Student:
+      type: object
+      properties:
+        _id:
+          type: ObjectId
+          description: Id autogenerado por MongoDB
+        name:
+          type: String
+          description: Nombre del estudiante
+        lastName:
+          type: String
+          description: Apellido del estudiante
+        email:
+          type: String
+          description: Precio
+        age:
+          type: Number
+          description: Edad
+        password:
+          type:   String
+          description: Contraseña
+        role:
+          type: String
+          description: Puede ser user o admin
+        courses: 
+          type: Object
+          properties:
+            course: 
+              type: ObjectId
+              description: ID del curso            
+      example:
+        _id: ObjectId('6489306c2c50908465ab72bd')
+        name: Juan Pablo
+        lastName: Larice
+        email: juanpablolarice@gmail.com
+        edad: 38
+        password: password
+        role: user
+        courses: [
+          6489306c2342342348465ab72bd
+        ]

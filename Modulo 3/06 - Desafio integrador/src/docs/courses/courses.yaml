@@ -1,0 +1,17 @@
+paths:
+  /api/courses:
+    get:
+      summary: Obtiene todos los estudiantes
+      tags:
+        - Estudiantes
+      responses:
+        "200":
+          description: La operación fue exitosa!
+  /api/courses:
+    post:
+      summary: Obtiene todos los estudiantes
+      tags:
+        - Estudiantes
+      responses:
+        "200":
+          description: La operación fue exitosa!!

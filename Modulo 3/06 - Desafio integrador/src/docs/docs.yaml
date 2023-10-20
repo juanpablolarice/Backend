@@ -1,0 +1,19 @@
+paths:
+  	/cart:
+    	get:
+      		summary: Se muestra el carro de la sesión activa
+      		tags:
+        		- Carts
+      		responses:
+        		"200":
+          			description: La operación fue exitosa!!
+					# content:
+					#   application/json:
+					#     schema:
+					#       type: array
+					#       items:
+					#         $ref: '#components/schemas/Product'
+        		"400":
+          			description: Se envio un dato no esperado
+        		"500":
+          			description: Error inesperado en el server

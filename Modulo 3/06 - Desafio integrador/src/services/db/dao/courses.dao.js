@@ -1,4 +1,4 @@
-import {coursesModel} from "../models/courses.js";
+import coursesModel from "../models/courses.js";
 
 export default class CoursesDao {
     constructor() { 
@@ -13,7 +13,7 @@ export default class CoursesDao {
         let course = await coursesModel.findOne({_id:id}).populate('students');
         return course;
     }
-    saveCourse =async course =>{
+    saveCourse = async (course) =>{
         let result = await coursesModel.create(course);
         return result;
     }

@@ -1,4 +1,5 @@
 import { studentService } from '../services/repository/services.js';
+import { sendEmailCheckout } from './emailController.js';
 
 export const getAll = async (req, res) => {
     try {
@@ -11,6 +12,7 @@ export const getAll = async (req, res) => {
 
 export const createStudent = async (req, res) => {
     try {
+        sendEmailCheckout(req.body)
         let result = await studentService.createStudent(req.body);
         res.status(201).send(result);
     } catch (error) {

@@ -8,6 +8,7 @@ const router = Router();
 
 router.get('/', addLogger, getAll);
 
+// router.post('/', save);
 router.post('/', addLogger, save);
 
 

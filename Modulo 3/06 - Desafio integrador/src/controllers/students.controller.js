@@ -12,9 +12,9 @@ export const getAll = async (req, res) => {
 
 export const createStudent = async (req, res) => {
     try {
-        sendEmailCheckout(req.body)
         let result = await studentService.createStudent(req.body);
         res.status(201).send(result);
+        sendEmailCheckout(req.body)
     } catch (error) {
         res.status(500).send({ error: error, message: "No se pudo guardar el estudiante." });
     }
